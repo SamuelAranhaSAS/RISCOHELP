@@ -1,0 +1,26 @@
+import os
+import random
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
+
+# Inicialize o cliente Slack
+slack_token = os.environ["SLACK_BOT_TOKEN"]
+client = WebClient(token=slack_token)
+membros = ["Murilo Simoncini (Poneco)", "Karen Miranda", "Luiz Fernando Lima de Figueiredo", "Samuel Aranha Sant'Anna"] 
+escolhidos = []
+def escolher_membro():
+    membro = random.choice([m for m in membros if m not in escolhidos])
+    escolhidos.append(membro)
+    if len(escolhidos) == len(membros):
+        escolhidos.clear()
+    return membro
+
+def enviar_mensagem_detalhada():
+    membro_escolhido = escolher_membro()
+    mensagem = f"Olá {membro_escolhido}! Hoje é sua vez de fazer administrar o grupo #risco-help"
+    try:
+        response = client.chat_postMessage(channel="#arriscados", text=mensagem)
+        print("Mensagem enviada com sucesso:", response["ts"])
+    except SlackApiError as e:
+        print(f"Erro ao enviar mensagem: {e}")
+enviar_mensagem_detalhada()
